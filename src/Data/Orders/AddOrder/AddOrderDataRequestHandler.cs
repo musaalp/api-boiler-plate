@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Data.Utils;
 using MediatR;
-using Sdk.Helpers;
+using Sdk.Helpers.SerializerHelper;
 using System.Threading;
 using System.Threading.Tasks;
 

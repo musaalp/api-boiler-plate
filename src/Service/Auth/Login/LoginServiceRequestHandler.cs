@@ -2,6 +2,7 @@
 using MediatR;
 using Sdk.Core.Exceptions;
 using Sdk.Helpers.CryptoHelper;
+using Service.Auth.CreateAccessToken;
 using Service.Utils;
 using System.Net;
 using System.Threading;
@@ -33,16 +34,19 @@ namespace Service.Auth.Login
             if (user == null)
                 throw new CustomException(TranslationKeys.User.NotFound, HttpStatusCode.NotFound);
 
-            var createAccessTokenServiceRequest = new CreateAccessTokenServiceRequest
+            var createTokenResponse = await _mediator.Send(new CreateAccessTokenServiceRequest
             {
+                UserId = user.Id,
+                UserName = user.UserName,
                 Email = user.Email,
                 FirstName = user.FirstName,
-                LastName = user.LastName,
-                UserId = user.Id,
-                UserName = user.UserName
-            };
+                LastName = user.LastName
+            }, cancellationToken);
 
-            return await _mediator.Send(createAccessTokenServiceRequest, cancellationToken);
+            return new LoginServiceResponse
+            {
+                AccessToken = createTokenResponse.AccessToken
+            };
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Api.Models.Orders;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sdk.Api.Attributes;
+using Sdk.Api.Authorization.Permission;
 using Sdk.Api.Utils;
 using Service.Orders.AddOrder;
 using Service.Orders.GetOrderByOrderId;
@@ -25,6 +27,7 @@ namespace Api.Controllers
         ///     Get order by given order Id.
         /// </summary>
         [HttpGet("{orderId}")]
+        [Permission(PermissionName.Admin)]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
@@ -42,7 +45,7 @@ namespace Api.Controllers
         ///     Add order data.
         /// </summary>
         [HttpPost]
-
+        [Permission(PermissionName.Orders.List)]
         [ProducesResponseType((int) HttpStatusCode.Created)]
         [ProducesResponseType((int) HttpStatusCode.Conflict)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]

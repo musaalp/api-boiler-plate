@@ -1,9 +1,13 @@
-﻿using MediatR;
+﻿using Data.Users.GetUserPermissions;
+using MediatR;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Sdk.Api.Models;
+using Sdk.Core.Exceptions;
+using Service.Utils;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -45,17 +49,16 @@ namespace Service.Auth.CreateAccessToken
             if (!string.IsNullOrWhiteSpace(request.Email))
                 tokenDescriptor.Subject.AddClaim(new Claim("Email", request.Email));
 
-            //// Multiple permissions can be applied.
-            //var permissions = await _mediator.Send(new GetUserPermissionsDataRequest
-            //{   
-            //    UserId = request.UserId
-            //}, cancellationToken);
+            var permissionsResponse = await _mediator.Send(new GetUserPermissionsDataRequest
+            {
+                UserId = request.UserId
+            }, cancellationToken);
 
-            //if (permissions.Count < 1)
-            //    throw new CustomException(TranslationKeys.User.UserHasNoClaim);
+            if (permissionsResponse.Permissions.Count < 1)
+                throw new CustomException(TranslationKeys.User.UserHasNoClaim, HttpStatusCode.NotFound);
 
-            //foreach (var permission in permissions)
-            //    tokenDescriptor.Subject.AddClaim(new Claim("Permission", permission.Value));
+            foreach (var permission in permissionsResponse.Permissions)
+                tokenDescriptor.Subject.AddClaim(new Claim("Permission", permission.Value));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);

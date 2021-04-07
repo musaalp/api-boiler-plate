@@ -1,7 +1,7 @@
 ﻿using Data.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Sdk.Helpers;
+using Sdk.Helpers.SerializerHelper;
 
 namespace Api.Extensions
 {

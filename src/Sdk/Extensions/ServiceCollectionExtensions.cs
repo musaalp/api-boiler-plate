@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sdk.Api.Authorization.Permission;
 using Sdk.Api.Mediatr.PipelinesBehaviours;
-using Sdk.Settings;
+using Sdk.Api.Settings;
 using Sdk.Swagger;
 using System.Collections.Generic;
 using System.Text;
@@ -18,9 +20,11 @@ namespace Sdk.Extensions
         {
             AddSwagger(services, configuration);
             AddPipelineBehaviors(services);
+            AddSdkAuthentication(services, configuration);
+            AddSdkAuthorization(services);
         }
 
-        public static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
+        public static void AddSwagger(IServiceCollection services, IConfiguration configuration)
         {
             string apiName = configuration.GetSection("ApiCoreSettings").Get<ApiCoreSettings>().ApiName ?? string.Empty;
 
@@ -64,8 +68,10 @@ namespace Sdk.Extensions
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationPipelineBehavior<,>));
         }
 
-        public static void AddSdkAuthentication(this IServiceCollection services, string jwtSecretKey)
+        public static void AddSdkAuthentication(IServiceCollection services, IConfiguration configuration)
         {
+            string jwtSecretKey = configuration.GetSection("ApiCoreSettings").Get<ApiCoreSettings>().JwtSettings.JwtSecretKey;
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,6 +89,17 @@ namespace Sdk.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSecretKey))
                 };
             });
+        }
+
+        public static void AddSdkAuthorization(IServiceCollection services)
+        {
+            services.AddAuthorizationCore(options =>
+            {
+                options.AddPolicy("Permission",
+                    b => { b.Requirements.Add(new PermissionAuthorizationRequirement()); });
+            });
+
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         }
     }
 }
