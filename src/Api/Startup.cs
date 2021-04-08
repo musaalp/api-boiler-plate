@@ -53,7 +53,7 @@ namespace Api
             app.UseSwagger();
             app.UseSwaggerUI(options =>
                     options.SwaggerEndpoint("/swagger/v1/swagger.json",
-                        $"Albelli Order API ({env.EnvironmentName})"));
+                        $"Order API ({env.EnvironmentName})"));
         }
     }
 }
