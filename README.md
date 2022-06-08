@@ -60,9 +60,6 @@ Follow these steps to get your development environment set up:
 	 dotnet test
 	 ```
 
-### Architectural overview (knowledge of distributed services, cloud platforms)
-
-![Image of Layers](https://github.com/musaalp/Online-University/blob/master/assets/ddd-layers.png)
 
 Application mainly consist of 3 layers. 
 * **Api Layer** : Responsible to communication with clients.
