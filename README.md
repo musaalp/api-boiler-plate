@@ -82,12 +82,7 @@ Handler checks required point and than communicate with data layer by using AddO
 If everything goes well data layer returns to service layer, service layer returns api layer with expected informations.
 
 
-#### Test Strategy
-In general there should be unit, integration, manual, automation and performance tests. I focused unit tests. Unit tests have been written for service and data layer.
-For unit tests i used `AAA` approach and mocking.
-
-
-#### Used tools and libraries
+#### Used techs and libraries
 
 * Dapper 2.0.78
 * FluentValidation 9.5.3
